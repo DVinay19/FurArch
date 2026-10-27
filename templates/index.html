@@ -1,0 +1,285 @@
+ <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10392d">
+  <title>FurArch — Spatial Design Studio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="{{ url_for('overview') }}">
+      <span class="brand-mark">F</span>
+      <span><b>FurArch</b><small>SPATIAL DESIGN STUDIO</small></span>
+    </a>
+
+    <div class="side-label">WORKSPACE</div>
+    <nav>
+      <a class="{{ 'active' if page=='overview' else '' }}" href="{{ url_for('overview') }}">◫ Overview</a>
+      <a class="{{ 'active' if page=='studio' else '' }}" href="{{ url_for('studio') }}">✳ Design Studio</a>
+      <a class="{{ 'active' if page=='planner' else '' }}" href="{{ url_for('planner') }}">◇ Space Planner · 4D</a>
+      <a class="{{ 'active' if page=='budget' else '' }}" href="{{ url_for('budget') }}">▤ Budget Manager</a>
+    </nav>
+
+    <div class="side-label">YOUR PROJECTS</div>
+    <div class="project-list">
+      {% for p in projects %}
+      <a href="{{ url_for('studio_edit', project_id=p.id) }}">• {{ p.name }}</a>
+      {% else %}
+      <p class="muted small">Your saved designs will appear here.</p>
+      {% endfor %}
+    </div>
+
+    <div class="sidebar-foot">
+      <b>Design workspace</b>
+      <small>Your personal project library</small>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <span class="eyebrow">FURARCH / WORKSPACE</span>
+        <h1>
+          {% if page == 'overview' %}Your creative space
+          {% elif page == 'studio' %}Design Studio
+          {% elif page == 'planner' %}4D Space Planner
+          {% elif page == 'budget' %}Budget Manager
+          {% else %}FurArch Workspace{% endif %}
+        </h1>
+        <p class="muted">Design beautiful interiors. Plan every detail.</p>
+      </div>
+      <a class="primary-button" href="{{ url_for('studio') }}">＋ Create design</a>
+    </header>
+
+    {% if page == 'overview' %}
+    <section class="hero">
+      <div class="hero-content">
+        <span class="eyebrow">DESIGN BEYOND DIMENSIONS</span>
+        <h2>Imagine it.<br>Design it. Live it.</h2>
+        <p>Bring your interior ideas to life with room planning, budget tools, and a time-based 4D design walkthrough.</p>
+        <a class="hero-button" href="{{ url_for('planner') }}">Explore 4D Studio →</a>
+      </div>
+      <div class="hero-image" role="img" aria-label="Contemporary interior inspiration"></div>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card">
+        <span class="stat-icon">◇</span>
+        <div><p>Saved projects</p><strong>{{ projects|length }}</strong><small>From your project library</small></div>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon">✳</span>
+        <div><p>Design workspace</p><strong>3D / 4D</strong><small>Explore room concepts</small></div>
+      </article>
+      <article class="stat-card">
+        <span class="stat-icon">₹</span>
+        <div><p>Budget planning</p><strong>Ready</strong><small>Manage your project costs</small></div>
+      </article>
+    </section>
+
+    <section class="projects-section">
+      <div class="section-heading">
+        <div><h2>Your saved projects</h2><p class="muted">Continue a real saved design or create a new one.</p></div>
+        <a class="text-link" href="{{ url_for('studio') }}">＋ New design</a>
+      </div>
+
+      <div class="saved-project-grid">
+        {% for p in projects %}
+        <article class="saved-project-card">
+          <div class="saved-project-visual">F.</div>
+          <div class="saved-project-info">
+            <h3>{{ p.name }}</h3>
+            <p class="muted">Saved in your project library</p>
+            <a class="text-link" href="{{ url_for('studio_edit', project_id=p.id) }}">Open project →</a>
+          </div>
+        </article>
+        {% else %}
+        <div class="empty-projects">
+          <span class="empty-icon">＋</span>
+          <h3>Your design journey starts here</h3>
+          <p>Create your first room design. It will appear here when you save it.</p>
+          <a class="primary-button" href="{{ url_for('studio') }}">Create your first project</a>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    {% elif page == 'planner' %}
+    <section class="four-d-panel">
+      <span class="eyebrow">SPATIAL DESIGN / TIME SIMULATION</span>
+      <h2>Watch your room evolve.</h2>
+      <p class="muted">Move through four design stages from an empty room to a finished interior.</p>
+
+      <div
+  class="four-d-room"
+  id="room3d"
+  data-stage="0"
+  data-room="{{ project.get('room_type', 'Living Room') if project else 'Living Room' }}"
+  data-length="{{ project.get('length', 12) if project else 12 }}"
+  data-width="{{ project.get('width', 10) if project else 10 }}"
+  data-height="{{ project.get('height', 8) if project else 8 }}"
+  data-wall="{{ project.get('wall_color', '#e7ded0') if project else '#e7ded0' }}"
+  data-floor="{{ project.get('floor_color', '#b78c63') if project else '#b78c63' }}"
+>
+        <div class="room-wall"></div>
+        <div class="room-floor"></div>
+        <div class="room-window"></div>
+        <div class="room-rug"></div>
+        <div class="room-sofa"><span></span><span></span><span></span></div>
+        <div class="room-table"></div>
+        <div class="room-plant"><span></span></div>
+        <div class="four-d-label" id="stageTitle">Stage 1 — Empty room</div>
+      </div>
+
+      <div class="timeline-heading">
+        <div><h3 id="stageHeading">Stage 1 — Empty room</h3><p id="stageDescription" class="muted">Start with the empty architectural space.</p></div>
+        <span class="timeline-count" id="stageCount">01 / 04</span>
+      </div>
+
+       <div class="stage-buttons">
+  <button type="button" class="stage-button active" data-stage="0">01 · Empty room</button>
+  <button type="button" class="stage-button" data-stage="1">02 · Structure</button>
+  <button type="button" class="stage-button" data-stage="2">03 · Materials</button>
+  <button type="button" class="stage-button" data-stage="3">04 · Furniture</button>
+  <button type="button" class="stage-button" data-stage="4">05 · Final styling</button>
+</div>
+
+      <div class="timeline-actions">
+        <button type="button" class="secondary-button" id="previousStage">← Previous</button>
+        <button type="button" class="primary-button" id="playTimeline">▶ Play simulation</button>
+        <button type="button" class="secondary-button" id="nextStage">Next →</button>
+      </div>
+      <p class="muted small">This is a staged visual concept walkthrough, not a construction-grade BIM simulation.</p>
+    </section>
+
+    
+{% elif page == 'studio' %}
+<section class="workspace-panel studio-form-panel">
+  <span class="eyebrow">YOUR DESIGN / PROJECT SETTINGS</span>
+  <h2>{{ 'Edit your design' if project else 'Create your interior design' }}</h2>
+  <p class="muted">Enter your room details, choose a style, set your budget, and save your project.</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="form-message {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form id="designForm"
+        method="POST"
+        action="{{ url_for('studio_save', project_id=project.id) if project else url_for('studio_save') }}">
+
+    <div class="form-grid">
+      <label>
+        Project name
+        <input name="name" required maxlength="100"
+               value="{{ project.get('name', '') }}"
+               placeholder="e.g. Jubilee Hills Residence">
+      </label>
+
+      <label>
+        Customer name
+        <input name="customer" maxlength="100"
+               value="{{ project.get('customer', '') }}"
+               placeholder="Customer name (optional)">
+      </label>
+
+      <label>
+        Room type
+        <select name="room_type" required>
+          {% for type in room_types %}
+          <option value="{{ type }}" {% if project.get('room_type', 'Living Room') == type %}selected{% endif %}>{{ type }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        Interior style
+        <select name="style" required>
+          {% for style in design_styles %}
+          <option value="{{ style }}" {% if project.get('style', 'Modern') == style %}selected{% endif %}>{{ style }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>
+        Length (feet)
+        <input id="length" name="length" type="number" min="0.1" max="10000" step="0.1" required value="{{ project.get('length', 12) }}">
+      </label>
+
+      <label>
+        Width (feet)
+        <input id="width" name="width" type="number" min="0.1" max="10000" step="0.1" required value="{{ project.get('width', 12) }}">
+      </label>
+
+      <label>
+        Height (feet)
+        <input id="height" name="height" type="number" min="0.1" max="100" step="0.1" required value="{{ project.get('height', 8) }}">
+      </label>
+
+      <label>
+        Total budget (₹)
+        <input name="budget" type="number" min="0" max="1000000000" step="1000" required value="{{ project.get('budget', 100000) }}">
+      </label>
+
+      <label>
+        Wall colour
+        <input id="wall_color" name="wall_color" type="color" value="{{ project.get('wall_color', '#e9e2d5') }}">
+      </label>
+
+      <label>
+        Floor colour
+        <input id="floor_color" name="floor_color" type="color" value="{{ project.get('floor_color', '#b99b78') }}">
+      </label>
+    </div>
+
+    <label class="full-field">
+      Design notes
+      <textarea name="notes" rows="3" placeholder="Describe your preferred furniture, lighting, and requirements">{{ project.get('notes', '') }}</textarea>
+    </label>
+
+    <div class="form-actions">
+      <button class="primary-button" type="submit">✓ Save project</button>
+      <a class="secondary-button" href="{{ url_for('overview') }}">Cancel</a>
+      {% if project %}
+      <a class="secondary-button" href="{{ url_for('planner', project_id=project.id) }}">Open 4D planner →</a>
+      {% endif %}
+    </div>
+  </form>
+</section>
+
+
+    {% elif page == 'budget' %}
+    <section class="workspace-panel">
+      <h2>Budget Manager</h2>
+      <p class="muted">Manage the costs of your interior design projects.</p>
+      <p>Keep your existing budget form, saved expense list, and calculations connected to your Flask backend.</p>
+    </section>
+    {% endif %}
+
+    <footer class="page-footer">
+      <span>FurArch · Spatial Design Studio</span>
+      <span>Thoughtful spaces. Better living.</span>
+    </footer>
+  </main>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+  }
+}
+</script>
+
+<script type="module" src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
