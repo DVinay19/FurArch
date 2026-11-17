@@ -1,4 +1,4 @@
-#  FurArch — Spatial Design Studio
+ #  FurArch — Spatial Design Studio
 
 <p align="center">
   <strong>Design Spaces. Visualize Ideas. Plan Better Living.</strong>
